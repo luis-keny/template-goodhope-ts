@@ -1,0 +1,67 @@
+<script setup lang="ts">
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+  PaginationFirst,
+  PaginationLast,
+} from '@/components/ui/pagination'
+
+interface Props {
+  total: number
+  itemsPerPage?: number
+  defaultPage?: number
+  siblingCount?: number
+  showEdges?: boolean
+  modelValue?: number
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  itemsPerPage: 10,
+  defaultPage: 1,
+  siblingCount: 1,
+  showEdges: false,
+})
+
+const model = defineModel<number>()
+</script>
+
+<template>
+  <Pagination
+    v-slot="{ page }"
+    :total="total"
+    :sibling-count="props.siblingCount"
+    :show-edges="props.showEdges"
+    :default-page="props.defaultPage"
+    :items-per-page="props.itemsPerPage"
+    v-model:page="model"
+  >
+    <PaginationContent v-slot="{ items }">
+      <PaginationFirst v-if="props.showEdges" />
+      <PaginationPrevious />
+
+      <template v-for="(item, index) in items">
+        <PaginationItem
+          v-if="item.type === 'page'"
+          :key="index"
+          :value="item.value"
+          :is-active="item.value === page"
+          class="w-9 h-9 p-0"
+        >
+          {{ item.value }}
+        </PaginationItem>
+        <PaginationEllipsis
+          v-else
+          :key="item.type + index"
+          :index="index"
+        />
+      </template>
+
+      <PaginationNext />
+      <PaginationLast v-if="props.showEdges" />
+    </PaginationContent>
+  </Pagination>
+</template>
